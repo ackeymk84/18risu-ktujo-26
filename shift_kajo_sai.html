@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R8葛城祭 理数科展 シフト表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --border: #e2e4e9;
+    --text: #1a1d23;
+    --text-muted: #6b7280;
+    --text-hint: #9ca3af;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --blue-text: #1d4ed8;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --green-text: #15803d;
+    --now-border: #2563eb;
+    --done-bg: #f9fafb;
+    --done-text: #9ca3af;
+    --badge-now-bg: #dbeafe;
+    --badge-now-text: #1e40af;
+    --badge-next-bg: #dcfce7;
+    --badge-next-text: #166534;
+    --badge-done-bg: #f3f4f6;
+    --badge-done-text: #9ca3af;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  /* TOPBAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 36px; height: 36px;
+    background: var(--blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+  }
+  .site-title { font-size: 16px; font-weight: 700; }
+  .site-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  #clock { font-size: 14px; font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .now-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--text);
+    transition: background .15s, border-color .15s;
+    font-family: inherit;
+  }
+  .now-btn:hover { background: var(--bg); border-color: #c5c9d1; }
+  /* DAY TABS */
+  .day-nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+  }
+  .day-tab {
+    padding: 14px 22px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: color .15s, border-color .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .day-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .day-tab:hover:not(.active) { color: var(--text); background: var(--bg); }
+  /* MAIN */
+  .main { padding: 24px; max-width: 860px; margin: 0 auto; }
+  /* SLOT CARD */
+  .slot-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .slot-card.now-card { border: 2px solid var(--now-border); }
+  .slot-card.done-card { opacity: .65; }
+  .slot-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    background: #fafafa;
+  }
+  .slot-head-left { display: flex; align-items: center; gap: 10px; }
+  .time-range { font-size: 15px; font-weight: 700; }
+  .badge {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .badge-now { background: var(--badge-now-bg); color: var(--badge-now-text); }
+  .badge-next { background: var(--badge-next-bg); color: var(--badge-next-text); }
+  .badge-done { background: var(--badge-done-bg); color: var(--badge-done-text); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  /* SLOT BODY */
+  .slot-body { display: grid; grid-template-columns: 1fr 1fr; }
+  @media(max-width:520px){ .slot-body{ grid-template-columns:1fr; } }
+  .role-col { padding: 14px 18px; }
+  .role-col:first-child { border-right: 1px solid var(--border); }
+  @media(max-width:520px){ .role-col:first-child{ border-right:none; border-bottom:1px solid var(--border); } }
+  .role-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .06em;
+    color: var(--text-muted); text-transform: uppercase;
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 10px;
+  }
+  .role-icon { font-size: 14px; }
+  /* PERSON */
+  .person-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .person-row:last-child { margin-bottom: 0; }
+  .av {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .av-blue { background: var(--blue-light); color: var(--blue-text); }
+  .av-green { background: var(--green-light); color: var(--green-text); }
+  .pname { font-size: 14px; font-weight: 500; }
+  .phr { font-size: 11px; color: var(--text-hint); margin-top: 1px; }
+
+  /* SECTION HEADER */
+  .section-head {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    color: var(--text-hint); text-transform: uppercase;
+    margin: 20px 0 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-head:first-child { margin-top: 0; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">⚗️</div>
+    <div>
+      <div class="site-title">R8葛城祭 理数科展</div>
+      <div class="site-sub">18HR シフト担当割</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="clock"></span>
+    <button class="now-btn" onclick="showNow()">📍 現在のコマへ</button>
+  </div>
+</div>
+
+<div class="day-nav">
+  <button class="day-tab active" onclick="setDay(0)">📅 5/30（土）</button>
+  <button class="day-tab" onclick="setDay(1)">📅 5/31（日）</button>
+</div>
+
+<div class="main" id="main"></div>
+
+<script>
+const roster = {
+  1801:"浅野 凛太郎",1802:"石井 和花",1803:"鵜林 千優",1804:"江幡 吏琥",
+  1805:"遠藤 大樹",1806:"大石 暖泰",1807:"大越 楓眞",1808:"落合 諒磨",
+  1809:"小柳津 義久",1810:"金指 壮真",1811:"河﨑 蓮助",1812:"久野 伶奈",
+  1813:"窪野 裕太",1814:"熊谷 悠吾",1815:"小林 鉄平",1816:"杉田 幸太郎",
+  1817:"鈴木 由愛",1818:"鈴木 葉太",1819:"曽根 千鶴",1820:"高橋 舞",
+  1821:"髙橋 優仁",1822:"田嶋 楓",1823:"田中 千陽",1825:"友田 大夢",
+  1826:"中嶋 大翔",1827:"夏目 結渚",1828:"長谷川 穂花",1829:"平川 瑛大",
+  1830:"平松 侑弥",1831:"増田 治真",1832:"増田 有真",1833:"松下 智紗子",
+  1834:"水野 杏純",1835:"村井 亮介",1836:"森下 瑞生",1837:"森屋 彩美",
+  1838:"八木 巧翔",1839:"八木 唯斗",1840:"山﨑 柚維",1841:"山本 珠彩",
+  1842:"良知 寛太"
+};
+function p(hr){return{hr,name:roster[hr]||"（未登録）"};}
+
+const data = {
+  0: { slots: [
+    {time:"9:30–10:45",  start:"09:30",end:"10:45", fuel:[p(1810),p(1811),p(1838),p(1839)], solar:[p(1823),p(1827)]},
+    {time:"10:45–12:00", start:"10:45",end:"12:00", fuel:[p(1802),p(1821),p(1826),p(1825)], solar:[p(1816),p(1805)]},
+    {time:"13:00–14:15", start:"13:00",end:"14:15", fuel:[p(1831),p(1832),p(1842),p(1835)], solar:[p(1817),p(1819)]},
+    {time:"14:15–15:30", start:"14:15",end:"15:30", fuel:[p(1837),p(1828),p(1803),p(1820)], solar:[p(1829),p(1815)]}
+  ]},
+  1: { slots: [
+    {time:"9:15–10:30",  start:"09:15",end:"10:30", fuel:[p(1833),p(1812),p(1840),p(1841)], solar:[p(1814),p(1818)]},
+    {time:"10:30–11:30", start:"10:30",end:"11:30", fuel:[p(1804),p(1808),p(1836),p(1809)], solar:[p(1813),p(1807)]},
+    {time:"11:30–12:30", start:"11:30",end:"12:30", fuel:[p(1830),p(1834),p(1801),p(1825)], solar:[p(1807),p(1806)]}
+  ]}
+};
+
+let currentDay = 0;
+function toMin(t){const[h,m]=t.split(":").map(Number);return h*60+m;}
+function slotStatus(slot){
+  const now=new Date(), cur=now.getHours()*60+now.getMinutes();
+  const s=toMin(slot.start), e=toMin(slot.end);
+  if(cur<s) return "next";
+  if(cur>=e) return "done";
+  return "now";
+}
+function initials(name){return name.replace(/\s/g,"").slice(0,2);}
+
+function render(){
+  const d = data[currentDay];
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+  let nextShown = false;
+
+  const amSlots = d.slots.filter(s=>toMin(s.end)<=toMin("12:30"));
+  const pmSlots = d.slots.filter(s=>toMin(s.start)>=toMin("13:00"));
+
+  function renderGroup(slots, label){
+    if(!slots.length) return;
+    const sh = document.createElement("div");
+    sh.className = "section-head";
+    sh.innerHTML = `${label}<span class="section-line"></span>`;
+    main.appendChild(sh);
+    slots.forEach((slot,i)=>{
+      const st = slotStatus(slot);
+      const isNext = st==="next" && !nextShown;
+      if(isNext) nextShown=true;
+
+      const makePersons = (list, cls) => list.map(person=>`
+        <div class="person-row">
+          <div class="av ${cls}">${initials(person.name)}</div>
+          <div><div class="pname">${person.name}</div><div class="phr">HR${person.hr}</div></div>
+        </div>`).join("");
+
+      let badge = "";
+      if(st==="now")  badge=`<span class="badge badge-now"><span class="dot"></span>進行中</span>`;
+      else if(isNext) badge=`<span class="badge badge-next">次のコマ</span>`;
+      else if(st==="done") badge=`<span class="badge badge-done">終了</span>`;
+
+      const card = document.createElement("div");
+      card.className = "slot-card" + (st==="now"?" now-card":"") + (st==="done"?" done-card":"");
+      card.id = "slot-"+slot.start.replace(":","");
+      card.innerHTML = `
+        <div class="slot-head">
+          <div class="slot-head-left">
+            <span style="font-size:16px">🕐</span>
+            <span class="time-range">${slot.time}</span>
+            ${badge}
+          </div>
+        </div>
+        <div class="slot-body">
+          <div class="role-col">
+            <div class="role-label"><span class="role-icon">⚗️</span>燃料電池実験補助</div>
+            ${makePersons(slot.fuel,"av-blue")}
+          </div>
+          <div class="role-col">
+            <div class="role-label"><span class="role-icon">☀️</span>ソーラー発電説明兼受付</div>
+            ${makePersons(slot.solar,"av-green")}
+          </div>
+        </div>`;
+      main.appendChild(card);
+    });
+  }
+
+  if(currentDay===0){
+    renderGroup(amSlots, "午前");
+    renderGroup(pmSlots, "午後");
+  } else {
+    renderGroup(d.slots, "午前");
+  }
+}
+
+function setDay(d){
+  currentDay = d;
+  document.querySelectorAll(".day-tab").forEach((t,i)=>t.classList.toggle("active",i===d));
+  render();
+}
+
+function showNow(){
+  const now = new Date(), day = now.getDay();
+  if(day===6) setDay(0);
+  else if(day===0) setDay(1);
+  else render();
+  const nowCard = document.querySelector(".now-card");
+  const nextCard = document.querySelector(".badge-next")?.closest(".slot-card");
+  const target = nowCard || nextCard;
+  if(target) target.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function updateClock(){
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleString("ja-JP",{month:"numeric",day:"numeric",weekday:"short",hour:"2-digit",minute:"2-digit"});
+}
+updateClock();
+setInterval(()=>{ updateClock(); render(); }, 30000);
+render();
+</script>
+</body>
+</html>
